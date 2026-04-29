@@ -16,7 +16,8 @@ import re
 import time
 from pathlib import Path
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -28,20 +29,11 @@ logger = logging.getLogger(__name__)
 # Gemini setup (with Search grounding)
 # ---------------------------------------------------------------------------
 
-def _get_grounded_model():
-    genai.configure(api_key=config.GEMINI_API_KEY)
-    # Google Search grounding is available on gemini-1.5-flash via tools
-    model = genai.GenerativeModel(
-        config.GEMINI_MODEL,
-        tools="google_search_retrieval",   # built-in grounding tool
+def _get_client():
+    return genai.Client(
+        api_key=config.GEMINI_API_KEY,
+        http_options={"api_version": "v1alpha"},
     )
-    return model
-
-
-def _get_plain_model():
-    """Fallback plain model when grounding quota is exhausted."""
-    genai.configure(api_key=config.GEMINI_API_KEY)
-    return genai.GenerativeModel(config.GEMINI_MODEL)
 
 
 # ---------------------------------------------------------------------------
@@ -91,7 +83,7 @@ def _strip_fences(text: str) -> str:
 # Core enrichment
 # ---------------------------------------------------------------------------
 
-def _research_job(model, job: dict) -> dict:
+def _research_job(client, job: dict) -> dict:
     """Call Gemini to fill compensation + company_snapshot for one job."""
     prompt = COMPENSATION_PROMPT.format(
         title=job.get("title",    "N/A"),
@@ -99,9 +91,13 @@ def _research_job(model, job: dict) -> dict:
         location=job.get("location", "N/A"),
     )
     try:
-        response = model.generate_content(
-            prompt,
-            generation_config={"temperature": 0.1, "max_output_tokens": 1024},
+        response = client.models.generate_content(
+            model=config.GEMINI_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.1,
+                max_output_tokens=1024,
+            ),
         )
         raw     = response.text
         cleaned = _strip_fences(raw)
@@ -174,40 +170,14 @@ def enrich_jobs(jobs: list[dict]) -> list[dict]:
             j.setdefault("company_snapshot", _empty_snapshot())
         return jobs
 
-    # Try grounded model; if it blows up on the first call, downgrade
-    try:
-        model = _get_grounded_model()
-        # Quick probe — if grounding is unsupported an exception is raised here
-        _ = model  # actual probe happens on first generate_content call
-    except Exception as exc:
-        logger.warning("Grounded model unavailable (%s); using plain model", exc)
-        model = _get_plain_model()
-
-    grounding_failed = False
+    client = _get_client()
 
     for idx, job in enumerate(jobs, start=1):
         logger.info(
             "[%d/%d] Researching compensation: %s @ %s",
             idx, len(jobs), job.get("title"), job.get("company"),
         )
-
-        if grounding_failed:
-            # Already downgraded
-            _research_job(model, job)
-        else:
-            try:
-                _research_job(model, job)
-            except Exception as exc:
-                if "grounding" in str(exc).lower() or "tool" in str(exc).lower():
-                    logger.warning(
-                        "Search grounding not available (%s); switching to plain model",
-                        exc,
-                    )
-                    grounding_failed = True
-                    model = _get_plain_model()
-                    _research_job(model, job)
-                else:
-                    raise
+        _research_job(client, job)
 
         time.sleep(1)   # polite delay — free tier: 1500 req/day
 

@@ -16,7 +16,8 @@ import re
 import time
 from pathlib import Path
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -28,9 +29,11 @@ logger = logging.getLogger(__name__)
 # Gemini setup
 # ---------------------------------------------------------------------------
 
-def _get_model():
-    genai.configure(api_key=config.GEMINI_API_KEY)
-    return genai.GenerativeModel(config.GEMINI_MODEL)
+def _get_client():
+    return genai.Client(
+        api_key=config.GEMINI_API_KEY,
+        http_options={"api_version": "v1alpha"},
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -87,7 +90,7 @@ def _strip_fences(text: str) -> str:
     return text.strip()
 
 
-def score_job(model, job: dict) -> dict:
+def score_job(client, job: dict) -> dict:
     """
     Call Gemini to score a single job.
     On any failure return score=0 and mark processed=True so we don't retry.
@@ -105,10 +108,23 @@ def score_job(model, job: dict) -> dict:
     )
 
     try:
-        response = model.generate_content(
-            prompt,
-            generation_config={"temperature": 0.2, "max_output_tokens": 512},
-        )
+        for attempt in range(3):
+            try:
+                response = client.models.generate_content(
+                    model=config.GEMINI_MODEL,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        temperature=0.2,
+                        max_output_tokens=1024,
+                    ),
+                )
+                break
+            except Exception as e:
+                if "429" in str(e) and attempt < 2:
+                    logger.warning("Rate limited, waiting 65s before retry %d/3...", attempt + 1)
+                    time.sleep(65)
+                else:
+                    raise
         raw = response.text
         cleaned = _strip_fences(raw)
         data = json.loads(cleaned)
@@ -142,6 +158,29 @@ def score_job(model, job: dict) -> dict:
 # Public API
 # ---------------------------------------------------------------------------
 
+_PREFILTER_KEYWORDS = [
+    "ml", "machine learning", "ai ", " ai,", "llm", "nlp", "deep learning",
+    "python", "pytorch", "tensorflow", "data scientist", "research engineer",
+    "software engineer", "sde", "backend", "generative", "inference",
+    "quantization", "vllm", "langchain", "hugging face", "teaching", "mentor",
+]
+
+def _keyword_prefilter(jobs: list[dict]) -> list[dict]:
+    """Keep only jobs whose title or description contains a relevant keyword."""
+    matched = []
+    for job in jobs:
+        text = (job.get("title", "") + " " + job.get("description", "")).lower()
+        if any(kw in text for kw in _PREFILTER_KEYWORDS):
+            matched.append(job)
+        else:
+            # Mark irrelevant jobs as processed with score 0 so they're skipped next run
+            job["processed"] = True
+            job["score"] = 0
+            job["score_reason"] = "Filtered out by keyword pre-filter"
+    logger.info("Keyword pre-filter: %d / %d jobs passed", len(matched), len(jobs))
+    return matched
+
+
 def score_and_filter(jobs: dict) -> list[dict]:
     """
     Score all unprocessed jobs; return shortlisted list sorted by score desc.
@@ -157,18 +196,20 @@ def score_and_filter(jobs: dict) -> list[dict]:
         logger.error("GEMINI_API_KEY not set — cannot score jobs")
         return []
 
-    model = _get_model()
+    client = _get_client()
 
     unprocessed = [j for j in jobs.values() if not j.get("processed")]
-    logger.info("Scoring %d unprocessed jobs with Gemini...", len(unprocessed))
+    # Pre-filter by keyword match before spending API quota
+    unprocessed = _keyword_prefilter(unprocessed)
+    logger.info("Scoring %d keyword-matched jobs with Gemini...", len(unprocessed))
 
     for idx, job in enumerate(unprocessed, start=1):
         logger.info(
             "[%d/%d] Scoring: %s @ %s",
             idx, len(unprocessed), job.get("title"), job.get("company"),
         )
-        score_job(model, job)
-        time.sleep(0.5)   # stay comfortably within 1500 req/day free tier
+        score_job(client, job)
+        time.sleep(2.5)   # 30 RPM free tier = max 1 req/2s
 
     shortlisted = [
         j for j in jobs.values()

@@ -7,6 +7,10 @@ roles, locations, scoring thresholds, and platform toggles.
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file when running locally (ignored on GitHub Actions where secrets are injected directly)
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -132,7 +136,7 @@ GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD", "")
 # ---------------------------------------------------------------------------
 # Gemini
 # ---------------------------------------------------------------------------
-GEMINI_MODEL = "gemini-1.5-flash"
+GEMINI_MODEL = "gemini-2.0-flash-lite"
 
 # ---------------------------------------------------------------------------
 # Email

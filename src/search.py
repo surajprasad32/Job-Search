@@ -117,8 +117,8 @@ def fetch_jsearch(existing: dict) -> dict:
     if config.INTERNATIONAL_REMOTE:
         locations.append("remote worldwide")
 
-    for role in config.TARGET_ROLES[:6]:          # cap to avoid rate limits
-        for loc in locations[:4]:
+    for role in config.TARGET_ROLES[:4]:          # cap to avoid rate limits
+        for loc in locations[:3]:
             query = f"{role} {loc}"
             try:
                 for page in range(1, config.JSEARCH_MAX_PAGES + 1):
@@ -133,7 +133,7 @@ def fetch_jsearch(existing: dict) -> dict:
                         "https://jsearch.p.rapidapi.com/search",
                         headers=headers,
                         params=params,
-                        timeout=15,
+                        timeout=30,
                     )
                     if resp.status_code == 429:
                         logger.warning("JSearch rate-limited; pausing 10 s")
