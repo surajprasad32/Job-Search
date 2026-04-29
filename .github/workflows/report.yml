@@ -1,0 +1,61 @@
+name: Evening Report (7 PM IST)
+
+on:
+  schedule:
+    - cron: "30 13 * * *"   # 7:00 PM IST (UTC+5:30)
+  workflow_dispatch:         # allow manual trigger from Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    name: Score jobs, enrich, and email report
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create required directories
+        run: mkdir -p data output logs
+
+      - name: Run evening pipeline
+        env:
+          GEMINI_API_KEY:       ${{ secrets.GEMINI_API_KEY }}
+          GMAIL_USER:           ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD:   ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python src/main.py
+
+      - name: Upload HTML report as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: job-report-${{ github.run_id }}
+          path: output/
+          retention-days: 30
+
+      - name: Commit updated files (if changed)
+        if: always()
+        run: |
+          git config user.name  "job-pipeline[bot]"
+          git config user.email "job-pipeline[bot]@users.noreply.github.com"
+          git add data/jobs.json output/ logs/
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: evening report [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+            git push
+          fi

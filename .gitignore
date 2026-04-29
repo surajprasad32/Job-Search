@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Secrets — never commit these
+.env
+*.env
+secrets.json
+
+# Output & logs (committed by the bot after each run)
+# output/   <- intentionally tracked
+# logs/     <- intentionally tracked
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp

@@ -1,0 +1,130 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[margin=0.6in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{fontawesome}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{setspace}
+\usepackage{nopageno}
+\definecolor{linkcolor}{RGB}{0, 0, 255}
+\titleformat{\section}{\large\bfseries\centering}{\thesection}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{5pt}{3pt}
+\setlength{\parindent}{0pt}
+\setstretch{0.82}
+\setlist[itemize]{leftmargin=0.4cm, itemsep=0pt, parsep=0pt, topsep=1pt}
+\hypersetup{colorlinks=true, linkcolor=linkcolor, urlcolor=linkcolor}
+\newcommand{\resumeItem}[1]{\item[\circ] #1}
+\newcommand{\linktext}[2]{{\color{linkcolor}\href{#1}{#2}}}
+\begin{document}
+\begin{minipage}[t]{0.5\textwidth}
+    \textbf{\Large SURAJ PRASAD KALAUNI}\\
+    \href{https://www.linkedin.com/in/surajprasaddtu}{LinkedIn} \\
+    \href{https://github.com/surajprasad32}{GitHub}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+    \begin{flushright}
+        Email: \href{mailto:spkalauni7789@gmail.com}{spkalauni7789@gmail.com}\\
+        Mobile: +91 8267081462
+    \end{flushright}
+\end{minipage}
+\vspace{-0.1cm}
+\section*{EDUCATION}
+\begin{tabular}{@{}p{0.7\textwidth}p{0.3\textwidth}@{}}
+    Delhi Technological University & Delhi, India \\
+    \textit{M.Tech Software Engineering, GPA: 8.33} & \textit{Aug 2024 - Aug 2026} \\
+    Dr. A.P.J Abdul Kalam Technological University & Lucknow, India \\
+    \textit{B.Tech Computer Science and Engineering, GPA: 8.12} & \textit{Jun 2020 - Mar 2024} \\
+\end{tabular}
+\vspace{-0.1cm}
+\section*{SKILLS SUMMARY}
+\begin{itemize}
+\item \textbf{Languages}: Python, C++, C, Java, Golang
+\vspace{0.05cm}
+\item \textbf{ML Frameworks \& Inference Tools}: PyTorch, Hugging Face
+Transformers, TensorFlow, vLLM, BitsAndBytes, ONNX, LangChain, SGLang
+\vspace{0.05cm}
+\item \textbf{Inference \& Optimization}: Speculative Decoding, INT8/FP16
+Quantization, Structured Pruning \& Compression, Sparse Attention,
+KV-Cache Optimization, Post-Training Techniques, RAG, Prompt Engineering
+\vspace{0.05cm}
+\item \textbf{Systems \& Infrastructure}: Docker, Kubernetes, AWS (EC2, S3,
+Lambda), Linux, REST APIs, CI/CD, Observability \& Monitoring
+\item \textbf{Core Computer Science}: Data Structures \& Algorithms, Operating
+Systems, Computer Networks, System Design, OOP, DBMS
+\end{itemize}
+\vspace{-0.1cm}
+\section*{WORK EXPERIENCE}
+\textbf{Samsung Research and Development $|$ Software Engineer Intern}
+\hfill July 2025 -- January 2026
+\begin{itemize}
+    \item Engineered LLM-powered agentic workflows integrated into internal
+    developer tools; applied prompt chaining and tool-use patterns to automate
+    multi-step developer tasks, cutting manual overhead significantly.
+    \item Optimised transformer-based inference pipelines for production
+    deployment — applied batching, prompt compression, and caching strategies,
+    reducing average inference latency by \textbf{15\%} on internal benchmarks.
+    \item Built and containerised full-stack services (Next.js, TypeScript)
+    using Docker \& Kubernetes on AWS, achieving \textbf{99.9\%} uptime with
+    improved system observability and monitoring.
+    \item Collaborated with cross-functional ML and platform teams to validate
+    model outputs, debug inference failures, and tune generation parameters
+    across multi-agent orchestration frameworks.
+\end{itemize}
+\vspace{-0.1cm}
+\section*{PROJECTS}
+\textbf{Speculative Decoding — LLM Inference Acceleration}\hfill 2025
+\begin{itemize}
+    \item Implemented speculative decoding from scratch using GPT-2 as draft
+    model and GPT-2 XL as target verifier; reproduced token acceptance and
+    rejection mechanism as described in Leviathan et al. (2023).
+    \item Measured \textbf{2.1$\times$ end-to-end throughput speedup} over
+    standard autoregressive decoding at equivalent output quality; analysed
+    acceptance rate vs. speedup tradeoff across temperature settings.
+    \item Profiled token generation latency, KV-cache memory usage, and batch
+    throughput across sequence lengths to quantify performance gains on CPU
+    and single-GPU environments.
+\end{itemize}
+\textbf{LLM Inference Benchmarking \& Quantization Pipeline}\hfill 2025
+\begin{itemize}
+    \item Built end-to-end benchmarking tool for open-source LLMs
+    (LLaMA 3.2-1B, Mistral-7B) measuring tokens/second, per-token latency,
+    peak memory, and batch throughput under varying load.
+    \item Applied INT8 post-training quantization via BitsAndBytes; achieved
+    \textbf{38\% reduction in GPU memory} with less than 1.2\% perplexity
+    degradation on WikiText-2 compared to FP16 baseline.
+    \item Exported quantized models to ONNX format and validated inference
+    outputs, documenting latency-accuracy tradeoffs across precision levels
+    (FP32, FP16, INT8) for reproducible evaluation.
+\end{itemize}
+\textbf{Transformer Pruning \& Compression for Efficient Inference}\hfill 2024
+\begin{itemize}
+    \item Designed structured pruning pipeline for DistilBERT; applied
+    magnitude-based attention-head pruning at 10\%, 20\%, and 30\% sparsity
+    levels and measured downstream accuracy on SST-2 classification.
+    \item Achieved \textbf{27\% reduction in inference latency} at 20\%
+    sparsity with only 0.8\% accuracy drop; benchmarked against knowledge
+    distillation baseline to compare compression strategies.
+    \item Analysed sparsity-accuracy tradeoff curves and visualised attention
+    head importance scores to identify redundant heads — findings directly
+    informed pruning threshold selection.
+\end{itemize}
+\vspace{-0.1cm}
+\section*{PUBLICATIONS}
+\begin{itemize}
+    \item Retinal Fundus Image and Deep Learning: A Novel Approach for
+    Cardiovascular Risk Prediction, Published in AIP Conference Proceedings,
+    2025.
+    \item Introduced a novel method for cardiovascular risk prediction,
+    utilizing retinal fundus images and deep learning techniques, achieving
+    79.41\% accuracy in classifying cardiovascular risk.
+    \item DOI: \linktext{https://doi.org/10.1063/5.0247009}{https://doi.org/10.1063/5.0247009}
+\end{itemize}
+\vspace{-0.1cm}
+\section*{ACHIEVEMENTS}
+\begin{itemize}
+    \item \linktext{https://drive.google.com/file/d/119HcGj2dlvhP-H1cSROeO51gGnfPOQP5/view}{GATE CSE 2024}: Qualified with Marks: 40.48, Score: 490/1000, Rank: 5943 among 123967.
+    \item \linktext{https://drive.google.com/file/d/1G_rEs7Rse5fOASrs1HE2DaDU_To_P00e/view}{GATE DA 2024}: Qualified with Marks: 38, Score: 362/1000, Rank: 5973 among 39210.
+\end{itemize}
+\end{document}

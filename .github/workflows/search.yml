@@ -1,0 +1,53 @@
+name: Job Search (3x Daily)
+
+on:
+  schedule:
+    - cron: "30 3 * * *"   # 9:00 AM IST  (UTC+5:30)
+    - cron: "30 6 * * *"   # 12:00 PM IST
+    - cron: "30 9 * * *"   # 3:00 PM IST
+  workflow_dispatch:        # allow manual trigger from Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  search:
+    name: Fetch jobs from all platforms
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create required directories
+        run: mkdir -p data output logs
+
+      - name: Run job search
+        env:
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+          SERPAPI_KEY:  ${{ secrets.SERPAPI_KEY }}
+        run: python src/search.py
+
+      - name: Commit updated jobs.json (if changed)
+        run: |
+          git config user.name  "job-pipeline[bot]"
+          git config user.email "job-pipeline[bot]@users.noreply.github.com"
+          git add data/jobs.json logs/
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: update jobs.json [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+            git push
+          fi
