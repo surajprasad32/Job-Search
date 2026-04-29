@@ -2,8 +2,8 @@ name: Evening Report (7 PM IST)
 
 on:
   schedule:
-    - cron: "30 13 * * *"   # 7:00 PM IST (UTC+5:30)
-  workflow_dispatch:         # allow manual trigger from Actions tab
+    - cron: "30 13 * * *"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -34,9 +34,9 @@ jobs:
 
       - name: Run evening pipeline
         env:
-          GEMINI_API_KEY:       ${{ secrets.GEMINI_API_KEY }}
-          GMAIL_USER:           ${{ secrets.GMAIL_USER }}
-          GMAIL_APP_PASSWORD:   ${{ secrets.GMAIL_APP_PASSWORD }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: python src/main.py
 
       - name: Upload HTML report as artifact
@@ -47,15 +47,15 @@ jobs:
           path: output/
           retention-days: 30
 
-      - name: Commit updated files (if changed)
+      - name: Commit updated files
         if: always()
         run: |
-          git config user.name  "job-pipeline[bot]"
+          git config user.name "job-pipeline[bot]"
           git config user.email "job-pipeline[bot]@users.noreply.github.com"
           git add data/jobs.json output/ logs/
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "chore: evening report [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+            git commit -m "chore: evening report"
             git push
           fi

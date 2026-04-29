@@ -1,0 +1,6 @@
+# Force LF line endings for all files on the remote
+* text=auto eol=lf
+*.yml eol=lf
+*.yaml eol=lf
+*.py eol=lf
+*.sh eol=lf
