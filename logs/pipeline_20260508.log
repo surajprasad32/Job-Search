@@ -11,3 +11,16 @@
 2026-05-08 05:39:40,157 [WARNING] __main__ — SERPAPI_KEY not set — skipping Google Jobs
 2026-05-08 05:39:40,158 [INFO] __main__ — Saved 0 jobs to /home/runner/work/Job-Search/Job-Search/data/jobs.json
 2026-05-08 05:39:40,158 [INFO] __main__ — === Search complete — 0 new jobs found (total: 0) ===
+2026-05-08 08:11:22,689 [INFO] __main__ — === Search run started ===
+2026-05-08 08:11:22,689 [WARNING] __main__ — RAPIDAPI_KEY not set — skipping JSearch
+2026-05-08 08:11:23,084 [WARNING] __main__ — Naukri returned 406 for role 'ML Engineer'
+2026-05-08 08:11:23,608 [WARNING] __main__ — Naukri returned 406 for role 'AI Engineer'
+2026-05-08 08:11:24,098 [WARNING] __main__ — Naukri returned 406 for role 'LLM Engineer'
+2026-05-08 08:11:24,418 [WARNING] __main__ — Naukri returned 406 for role 'Machine Learning Engineer'
+2026-05-08 08:11:24,734 [WARNING] __main__ — Naukri returned 406 for role 'Software Engineer'
+2026-05-08 08:11:25,094 [WARNING] __main__ — Naukri returned 406 for role 'SDE'
+2026-05-08 08:11:25,094 [INFO] __main__ — Naukri: 0 new jobs
+2026-05-08 08:11:30,488 [INFO] __main__ — Internshala: 0 new jobs
+2026-05-08 08:11:30,489 [WARNING] __main__ — SERPAPI_KEY not set — skipping Google Jobs
+2026-05-08 08:11:30,489 [INFO] __main__ — Saved 0 jobs to /home/runner/work/Job-Search/Job-Search/data/jobs.json
+2026-05-08 08:11:30,489 [INFO] __main__ — === Search complete — 0 new jobs found (total: 0) ===
