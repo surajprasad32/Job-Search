@@ -37,3 +37,23 @@
 2026-05-11 12:28:19,013 [WARNING] __main__ — SERPAPI_KEY not set — skipping Google Jobs
 2026-05-11 12:28:19,014 [INFO] __main__ — Saved 0 jobs to /home/runner/work/Job-Search/Job-Search/data/jobs.json
 2026-05-11 12:28:19,014 [INFO] __main__ — === Search complete — 0 new jobs found (total: 0) ===
+2026-05-11 16:15:40,245 [INFO] __main__ — ============================================================
+2026-05-11 16:15:40,245 [INFO] __main__ — Evening pipeline started
+2026-05-11 16:15:40,246 [INFO] __main__ — ============================================================
+2026-05-11 16:15:40,246 [INFO] __main__ — STEP 1: Scoring unprocessed jobs with Gemini …
+2026-05-11 16:15:40,246 [INFO] __main__ — Loaded 0 jobs from jobs.json
+2026-05-11 16:15:40,246 [ERROR] filter — GEMINI_API_KEY not set — cannot score jobs
+2026-05-11 16:15:40,246 [INFO] __main__ — Shortlisted 0 jobs (score >= 6)
+2026-05-11 16:15:40,246 [WARNING] __main__ — No jobs met the minimum score — sending empty report
+2026-05-11 16:15:40,246 [INFO] __main__ — STEP 2: Researching compensation and company snapshots …
+2026-05-11 16:15:40,246 [ERROR] compensation — GEMINI_API_KEY not set — skipping compensation research
+2026-05-11 16:15:40,246 [INFO] __main__ — STEP 3: Building HTML report …
+2026-05-11 16:15:40,246 [INFO] report — Report saved to /home/runner/work/Job-Search/Job-Search/output/report_20260511.html
+2026-05-11 16:15:40,247 [INFO] __main__ — STEP 4: Sending email report …
+2026-05-11 16:15:40,247 [ERROR] email_send — GMAIL_USER or GMAIL_APP_PASSWORD not set — cannot send email
+2026-05-11 16:15:40,247 [WARNING] __main__ — Email failed — HTML report saved to /home/runner/work/Job-Search/Job-Search/output/report_20260511.html as fallback
+2026-05-11 16:15:40,247 [INFO] __main__ — STEP 5: Saving enriched jobs.json …
+2026-05-11 16:15:40,247 [INFO] search — Saved 0 jobs to /home/runner/work/Job-Search/Job-Search/data/jobs.json
+2026-05-11 16:15:40,247 [INFO] __main__ — ============================================================
+2026-05-11 16:15:40,247 [INFO] __main__ — Pipeline complete — 0 jobs shortlisted, avg score 0.0, email FAILED (see fallback HTML)
+2026-05-11 16:15:40,247 [INFO] __main__ — ============================================================
